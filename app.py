@@ -8,6 +8,8 @@ from servicios import (
 )
 from archivos import guardar_csv, cargar_csv
 
+sin_guardar= False
+
 inventario = []
 
 print("#" * 60)
@@ -35,6 +37,7 @@ while opcion != "9":
             precio = float(input("Precio: "))
             cantidad = int(input("Cantidad: "))
             agregar_producto(inventario, nombre, precio, cantidad)
+            sin_guardar= True
 
         elif opcion == "2":
             mostrar_inventario(inventario)
@@ -57,6 +60,7 @@ while opcion != "9":
                 float(nuevo_precio) if nuevo_precio else None,
                 int(nueva_cantidad) if nueva_cantidad else None
             )
+            sin_guardar= True
 
         elif opcion == "5":
             nombre = input("Nombre del producto a eliminar: ")
@@ -68,6 +72,7 @@ while opcion != "9":
         elif opcion == "7":
             ruta = input("Ruta del archivo CSV: ")
             guardar_csv(inventario, ruta)
+            sin_guardar= False
 
         elif opcion == "8":
             ruta = input("Ruta del archivo CSV: ")
@@ -76,13 +81,33 @@ while opcion != "9":
                 decision = input("¿Sobrescribir inventario actual? (S/N): ").strip().upper()
                 if decision == "S":
                     inventario = nuevo_inventario
+                    sin_guardar= False
                     print(" Inventario sobrescrito.\n")
+                    
                 else:
-                    inventario.extend(nuevo_inventario)
+                    for producto in nuevo_inventario:
+                        inventario.append(producto)
+
+                    sin_guardar= False
                     print(" Inventario fusionado.\n")
 
         elif opcion == "9":
-            print("Saliendo del sistema...")
+            
+
+            if sin_guardar:
+
+                guardar= input("EY, TIENES CAMBIOS SIN GUARDAR. ¿QUIERES GUARDARLOS ANTES DE SALIR? (S / N): ")
+
+                if guardar == "S":
+                    ruta = input("Ruta del archivo CSV: ")
+                    guardar_csv(inventario, ruta)
+
+                else:
+                    print("Saliendo del sistema...")
+
+
+            
+
 
         else:
             print(" Opción inválida.\n")
